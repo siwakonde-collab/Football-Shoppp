@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mark Shop - ร้านค้าออนไลน์</title>
+    <title>Football Shop - ร้านค้าฟุตบอลและรองเท้าสตั๊ด</title>
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome for Icons -->
@@ -11,8 +11,8 @@
     
     <style>
         :root {
-            --primary-color: #FF6B6B;
-            --secondary-color: #4ECDC4;
+            --primary-color: #006400; /* สีเขียวเข้มเหมือนสนามฟุตบอล */
+            --secondary-color: #FFD700; /* สีทอง/เหลือง */
             --dark-color: #2D3436;
             --light-color: #F8F9FA;
         }
@@ -104,7 +104,7 @@
         /* Hero/Banner Section */
         .hero-section {
             background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), 
-                        url('https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=1200&h=500&fit=crop') center/cover;
+                        url('https://images.unsplash.com/photo-1593438653385-ad0cb6cc2c9e?w=1200&h=500&fit=crop') center/cover;
             height: 500px;
             display: flex;
             align-items: center;
@@ -410,8 +410,8 @@
     <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container-fluid">
             <a class="navbar-brand" href="#home">
-                <i class="fas fa-shopping-bag"></i>
-                Mark Shop
+                <i class="fas fa-futbol"></i>
+                Football Shop
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
@@ -449,10 +449,10 @@
     <!-- Hero/Banner Section -->
     <section class="hero-section" id="home">
         <div class="hero-content">
-            <h1>ยินดีต้อนรับสู่ Mark Shop</h1>
-            <p>ค้นหาสินค้าคุณภาพดีที่ราคาสมเหตุสมผล</p>
+            <h1>ยินดีต้อนรับสู่ Football Shop</h1>
+            <p>ค้นหาสินค้าฟุตบอลและรองเท้าสตั๊ดคุณภาพ</p>
             <a href="#products" class="btn-shop-now">
-                <i class="fas fa-shopping-bag"></i> Shop Now
+                <i class="fas fa-futbol"></i> ซื้อเลย
             </a>
         </div>
     </section>
@@ -474,7 +474,7 @@
                         <div class="product-body">
                             <p class="product-category">Featured Product</p>
                             <h5 class="product-name">{{ product.name }}</h5>
-                            <p class="product-description">สินค้าคุณภาพดี มาจากฐานข้อมูล Mark Shop</p>
+                            <p class="product-description">สินค้าฟุตบอลคุณภาพดีจากฐานข้อมูล Football Shop</p>
                             <div class="product-rating">
                                 <i class="fas fa-star"></i>
                                 <i class="fas fa-star"></i>
@@ -503,10 +503,10 @@
                 <div class="col-lg-3 col-md-6">
                     <div class="footer-section">
                         <h5 class="footer-title">
-                            <i class="fas fa-shopping-bag"></i> Mark Shop
+                            <i class="fas fa-futbol"></i> Football Shop
                         </h5>
                         <p class="footer-content">
-                            ร้านค้าออนไลน์ที่มีสินค้าคุณภาพดี ราคาเต็มความสุข และบริการลูกค้าที่เป็นเลิศ
+                            ร้านค้าออนไลน์อุปกรณ์ฟุตบอลและรองเท้าสตั๊ดที่คุณวางใจ
                         </p>
                         <div class="social-links">
                             <a href="#" title="Facebook"><i class="fab fa-facebook-f"></i></a>
@@ -560,7 +560,7 @@
                             </p>
                             <p>
                                 <i class="fas fa-envelope"></i>
-                                <a href="mailto:info@markshop.com">info@markshop.com</a>
+                                <a href="mailto:info@footballshop.com">info@footballshop.com</a>
                             </p>
                             <p>
                                 <i class="fas fa-clock"></i>
@@ -573,7 +573,7 @@
 
             <!-- Footer Bottom -->
             <div class="footer-bottom">
-                <p>&copy; 2026 Mark Shop. All Rights Reserved. | Designed with <i class="fas fa-heart"></i> by Mark</p>
+                <p>&copy; 2026 Football Shop. All Rights Reserved. | Designed with <i class="fas fa-heart"></i></p>
             </div>
         </div>
     </footer>

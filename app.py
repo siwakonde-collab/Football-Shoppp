@@ -9,7 +9,7 @@ app = Flask(__name__)
 basedir = os.path.abspath(os.path.dirname(__file__))
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'shop.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SECRET_KEY'] = 'mark-shop-secret-key-2026'  # สำหรับ session
+app.config['SECRET_KEY'] = 'football-shop-secret-key-2026'  # สำหรับ session
 
 # สร้าง Database Instance
 db = SQLAlchemy(app)
@@ -258,27 +258,27 @@ def seed_sample_data():
             print("✅ Database already has products. Skipping sample data insertion.")
             return
         
-        # ข้อมูลตัวอย่าง 4 ชิ้น
+        # ข้อมูลตัวอย่าง 4 ชิ้น (Football theme)
         sample_products = [
             Product(
-                name="หูฟังไร้สาย Premium",
-                price=2490.00,
-                image_url="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=250&fit=crop"
+                name="รองเท้าสตั๊ด Nike Mercurial",
+                price=2990.00,
+                image_url="https://images.unsplash.com/photo-1598643231624-2756a5c50916?w=400&h=250&fit=crop"
             ),
             Product(
-                name="นาฬิกาสมาร์ทวอทช์",
-                price=4990.00,
-                image_url="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400&h=250&fit=crop"
+                name="ลูกฟุตบอล Adidas Team Match",
+                price=1290.00,
+                image_url="https://images.unsplash.com/photo-1589548429479-5b3ea970fc9d?w=400&h=250&fit=crop"
             ),
             Product(
-                name="กระเป๋า Camera Bag",
-                price=1890.00,
-                image_url="https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&h=250&fit=crop"
+                name="เสื้อทีมฟุตบอล Replica",
+                price=890.00,
+                image_url="https://images.unsplash.com/photo-1580822183875-bc0d4142852c?w=400&h=250&fit=crop"
             ),
             Product(
-                name="แว่นตากันแดด",
-                price=3290.00,
-                image_url="https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=400&h=250&fit=crop"
+                name="สนับเข่าสำหรับฟุตบอล",
+                price=190.00,
+                image_url="https://images.unsplash.com/photo-1627147030848-f7934b29f444?w=400&h=250&fit=crop"
             )
         ]
         
@@ -315,7 +315,7 @@ if __name__ == '__main__':
     init_db()
     
     # รัน Flask Development Server
-    print("\n🚀 Starting Mark Shop Server...")
+    print("\n🚀 Starting Football Shop Server...")
     print("📍 http://localhost:5000")
     print("💡 Press CTRL+C to stop the server\n")
     
