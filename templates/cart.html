@@ -524,16 +524,14 @@
             }
         }
 
-        // Checkout
+        // Checkout: ไปยังหน้าฟอร์มชำระเงิน
         function checkout() {
             const cart = JSON.parse(localStorage.getItem('cart') || '[]');
             if (cart.length === 0) {
                 alert('ตะกร้าว่างเปล่า');
                 return;
             }
-
-            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-            alert(`ยอดรวม: ฿${total.toFixed(2)}\n\nระบบนี้เป็นเพียงสาระแสดงตัวอย่างเท่านั้น การชำระเงินจริงยังไม่พร้อม`);
+            window.location = '/checkout';
         }
 
         // Load cart on page load

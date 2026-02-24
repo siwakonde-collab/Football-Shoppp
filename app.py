@@ -38,6 +38,58 @@ class Product(db.Model):
     def __repr__(self):
         return f'<Product {self.name}>'
 
+class Order(db.Model):
+    """Model สำหรับบันทึกคำสั่งซื้อ"""
+    __tablename__ = 'orders'
+
+    id = db.Column(db.Integer, primary_key=True)
+    customer_name = db.Column(db.String(120), nullable=False)
+    phone = db.Column(db.String(50), nullable=False)
+    address = db.Column(db.Text, nullable=False)
+    payment_method = db.Column(db.String(50), nullable=False)
+    total_price = db.Column(db.Float, nullable=False)
+    created_at = db.Column(db.DateTime, nullable=False)
+
+    items = db.relationship('OrderItem', backref='order', cascade='all, delete-orphan')
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'customer_name': self.customer_name,
+            'phone': self.phone,
+            'address': self.address,
+            'payment_method': self.payment_method,
+            'total_price': self.total_price,
+            'created_at': self.created_at.isoformat(),
+            'items': [item.to_dict() for item in self.items]
+        }
+
+    def __repr__(self):
+        return f'<Order {self.id}>'
+
+class OrderItem(db.Model):
+    """Model สำหรับสินค้าที่อยู่ภายในคำสั่งซื้อ"""
+    __tablename__ = 'order_items'
+
+    id = db.Column(db.Integer, primary_key=True)
+    order_id = db.Column(db.Integer, db.ForeignKey('orders.id'), nullable=False)
+    product_id = db.Column(db.Integer, nullable=False)
+    product_name = db.Column(db.String(120), nullable=False)
+    quantity = db.Column(db.Integer, nullable=False)
+    unit_price = db.Column(db.Float, nullable=False)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'product_id': self.product_id,
+            'product_name': self.product_name,
+            'quantity': self.quantity,
+            'unit_price': self.unit_price
+        }
+
+    def __repr__(self):
+        return f'<OrderItem {self.product_name} x{self.quantity}>'
+
 
 # ===== Routes =====
 @app.route('/')
@@ -160,6 +212,61 @@ def delete_product(product_id):
         db.session.rollback()
         return jsonify({'error': str(e)}), 400
 
+# ===== Order APIs =====
+@app.route('/api/orders', methods=['POST'])
+def create_order():
+    """รับคำสั่งซื้อจากลูกค้า"""
+    try:
+        data = request.get_json()
+        cart = data.get('cart', [])
+        customer_name = data.get('customer_name')
+        phone = data.get('phone')
+        address = data.get('address')
+        payment_method = data.get('payment_method')
+
+        # ตรวจสอบข้อมูลพื้นฐาน
+        if not cart or not customer_name or not phone or not address or not payment_method:
+            return jsonify({'error': 'ข้อมูลไม่ครบถ้วน'}), 400
+
+        total = 0
+        for item in cart:
+            total += item.get('price', 0) * item.get('quantity', 0)
+
+        new_order = Order(
+            customer_name=customer_name,
+            phone=phone,
+            address=address,
+            payment_method=payment_method,
+            total_price=total,
+            created_at=db.func.now()
+        )
+        db.session.add(new_order)
+        db.session.flush()  # เพื่อให้ new_order.id มีค่า
+
+        # สร้าง OrderItem สำหรับแต่ละสินค้า
+        for item in cart:
+            order_item = OrderItem(
+                order_id=new_order.id,
+                product_id=item.get('id'),
+                product_name=item.get('name'),
+                quantity=item.get('quantity'),
+                unit_price=item.get('price')
+            )
+            db.session.add(order_item)
+
+        db.session.commit()
+
+        return jsonify({'message': 'สั่งซื้อสำเร็จ', 'order_id': new_order.id}), 201
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 400
+
+@app.route('/api/orders', methods=['GET'])
+def list_orders():
+    """คืนรายการคำสั่งซื้อ (สำหรับ Admin)"""
+    orders = Order.query.order_by(Order.created_at.desc()).all()
+    return jsonify([o.to_dict() for o in orders])
+
 
 # ===== Admin Routes =====
 def is_admin_logged_in():
@@ -265,6 +372,27 @@ def delete_product_admin(product_id):
         db.session.rollback()
     
     return redirect(url_for('dashboard'))
+
+# ===== Checkout & Orders Pages =====
+@app.route('/checkout')
+def checkout_page():
+    """แสดงฟอร์มกรอกที่อยู่และเลือกช่องทางชำระเงิน"""
+    return render_template('checkout.html')
+
+@app.route('/order-success/<int:order_id>')
+def order_success(order_id):
+    order = Order.query.get(order_id)
+    if not order:
+        return redirect(url_for('index'))
+    return render_template('order-success.html', order=order)
+
+# Admin orders listing
+@app.route('/admin/orders')
+def admin_orders():
+    if not is_admin_logged_in():
+        return redirect(url_for('login'))
+    orders = Order.query.order_by(Order.created_at.desc()).all()
+    return render_template('admin-orders.html', orders=orders)
 
 
 # ===== Seed Sample Data =====
