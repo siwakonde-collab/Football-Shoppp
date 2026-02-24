@@ -341,6 +341,20 @@
                     </div>
                 </div>
 
+                <!-- Category -->
+                <div class="form-group">
+                    <label for="category">
+                        <i class="fas fa-list"></i> หมวดหมู่สินค้า<span style="color: red;"> *</span>
+                    </label>
+                    <select id="category" name="category" required>
+                        <option value="">-- เลือกหมวดหมู่ --</option>
+                        {% for cat in categories %}
+                        <option value="{{ cat }}" {% if request.form.get('category')==cat %}selected{% endif %}>{{ cat }}</option>
+                        {% endfor %}
+                    </select>
+                    <div class="help-text">เลือกประเภทสินค้าที่เหมาะสม</div>
+                </div>
+
                 <!-- Buttons -->
                 <div class="button-group">
                     <button type="submit" class="btn-submit">

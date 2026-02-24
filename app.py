@@ -23,6 +23,7 @@ class Product(db.Model):
     name = db.Column(db.String(120), nullable=False)
     price = db.Column(db.Float, nullable=False)
     image_url = db.Column(db.String(500), nullable=False)
+    category = db.Column(db.String(80), nullable=False, default='อุปกรณ์เสริมฟุตบอล')
     
     def to_dict(self):
         """แปลง Product object เป็น dictionary"""
@@ -30,7 +31,8 @@ class Product(db.Model):
             'id': self.id,
             'name': self.name,
             'price': self.price,
-            'image_url': self.image_url
+            'image_url': self.image_url,
+            'category': self.category
         }
     
     def __repr__(self):
@@ -40,9 +42,15 @@ class Product(db.Model):
 # ===== Routes =====
 @app.route('/')
 def index():
-    """หน้าแรก - ดึงข้อมูล Product จาก Database"""
-    products = Product.query.all()
-    return render_template('index.html', products=products)
+    """หน้าแรก - ดึงข้อมูล Product จาก Database พร้อมตัวกรองหมวดหมู่"""
+    category = request.args.get('category')
+    if category:
+        products = Product.query.filter_by(category=category).all()
+    else:
+        products = Product.query.all()
+    # ส่ง list ของหมวดหมู่ที่ใช้งานให้ template แสดงเป็นเมนู
+    categories = ['ลูกฟุตบอล', 'รองเท้าฟุตบอล', 'อุปกรณ์เสริมฟุตบอล']
+    return render_template('index.html', products=products, categories=categories, selected_category=category)
 
 
 @app.route('/cart')
@@ -53,8 +61,12 @@ def cart():
 
 @app.route('/api/products', methods=['GET'])
 def get_products():
-    """API สำหรับดึงข้อมูล Product ทั้งหมด"""
-    products = Product.query.all()
+    """API สำหรับดึงข้อมูล Product ทั้งหมด หรือกรองด้วย category"""
+    category = request.args.get('category')
+    if category:
+        products = Product.query.filter_by(category=category).all()
+    else:
+        products = Product.query.all()
     return jsonify([product.to_dict() for product in products])
 
 
@@ -68,7 +80,8 @@ def create_product():
         new_product = Product(
             name=data.get('name'),
             price=data.get('price'),
-            image_url=data.get('image_url')
+            image_url=data.get('image_url'),
+            category=data.get('category', 'อุปกรณ์เสริมฟุตบอล')
         )
         
         # เพิ่มลงใน Database
@@ -114,6 +127,8 @@ def update_product(product_id):
             product.price = data['price']
         if 'image_url' in data:
             product.image_url = data['image_url']
+        if 'category' in data:
+            product.category = data['category']
         
         db.session.commit()
         
@@ -193,22 +208,25 @@ def add_product_admin():
     if not is_admin_logged_in():
         return redirect(url_for('login'))
     
+    categories = ['ลูกฟุตบอล', 'รองเท้าฟุตบอล', 'อุปกรณ์เสริมฟุตบอล']
     if request.method == 'POST':
         try:
             name = request.form.get('name')
             price = request.form.get('price')
             image_url = request.form.get('image_url')
+            category = request.form.get('category')
             
             # ตรวจสอบข้อมูล
-            if not name or not price or not image_url:
+            if not name or not price or not image_url or not category:
                 return render_template('admin-add-product.html', 
-                                     error='กรุณากรอกข้อมูลให้ครบ')
+                                     error='กรุณากรอกข้อมูลให้ครบ', categories=categories)
             
             # สร้าง Product object ใหม่
             new_product = Product(
                 name=name,
                 price=float(price),
-                image_url=image_url
+                image_url=image_url,
+                category=category
             )
             
             # บันทึกลง Database
@@ -219,13 +237,13 @@ def add_product_admin():
         
         except ValueError:
             return render_template('admin-add-product.html', 
-                                 error='ราคาต้องเป็นตัวเลข')
+                                 error='ราคาต้องเป็นตัวเลข', categories=categories)
         except Exception as e:
             db.session.rollback()
             return render_template('admin-add-product.html', 
-                                 error=f'เกิดข้อผิดพลาด: {str(e)}')
+                                 error=f'เกิดข้อผิดพลาด: {str(e)}', categories=categories)
     
-    return render_template('admin-add-product.html')
+    return render_template('admin-add-product.html', categories=categories)
 
 
 @app.route('/admin/delete-product/<int:product_id>', methods=['POST'])
@@ -263,22 +281,26 @@ def seed_sample_data():
             Product(
                 name="รองเท้าสตั๊ด Nike Mercurial",
                 price=2990.00,
-                image_url="https://images.unsplash.com/photo-1598643231624-2756a5c50916?w=400&h=250&fit=crop"
+                image_url="https://images.unsplash.com/photo-1598643231624-2756a5c50916?w=400&h=250&fit=crop",
+                category="รองเท้าฟุตบอล"
             ),
             Product(
                 name="ลูกฟุตบอล Adidas Team Match",
                 price=1290.00,
-                image_url="https://images.unsplash.com/photo-1589548429479-5b3ea970fc9d?w=400&h=250&fit=crop"
+                image_url="https://images.unsplash.com/photo-1589548429479-5b3ea970fc9d?w=400&h=250&fit=crop",
+                category="ลูกฟุตบอล"
             ),
             Product(
                 name="เสื้อทีมฟุตบอล Replica",
                 price=890.00,
-                image_url="https://images.unsplash.com/photo-1580822183875-bc0d4142852c?w=400&h=250&fit=crop"
+                image_url="https://images.unsplash.com/photo-1580822183875-bc0d4142852c?w=400&h=250&fit=crop",
+                category="อุปกรณ์เสริมฟุตบอล"
             ),
             Product(
                 name="สนับเข่าสำหรับฟุตบอล",
                 price=190.00,
-                image_url="https://images.unsplash.com/photo-1627147030848-f7934b29f444?w=400&h=250&fit=crop"
+                image_url="https://images.unsplash.com/photo-1627147030848-f7934b29f444?w=400&h=250&fit=crop",
+                category="อุปกรณ์เสริมฟุตบอล"
             )
         ]
         
@@ -287,24 +309,35 @@ def seed_sample_data():
             db.session.add_all(sample_products)
             db.session.commit()
             
-            print("✅ Sample products inserted successfully!")
-            print(f"📦 Added {len(sample_products)} products to database:")
+            print("Sample products inserted successfully!")
+            print(f"Added {len(sample_products)} products to database:")
             for product in sample_products:
                 print(f"   - {product.name} (฿{product.price:.2f})")
         
         except Exception as e:
             db.session.rollback()
-            print(f"❌ Error inserting sample data: {str(e)}")
+            print(f"Error inserting sample data: {str(e)}")
 
 
 # ===== Initialize Database =====
 def init_db():
-    """สร้าง Database และตาราง ถ้ายังไม่มี"""
+    """สร้าง Database และตาราง ถ้ายังไม่มี
+    นอกจากนี้จะพยายามเพิ่มคอลัมน์ `category` ถ้ายังไม่มี (สำหรับฐานข้อมูลเก่า)
+    """
     with app.app_context():
-        # สร้างตาราง
+        # สร้างตารางใหม่ (ถ้ายังไม่มี)
         db.create_all()
-        print("✅ Database initialized successfully!")
-        print(f"📁 Database file created: {os.path.abspath('shop.db')}")
+        print("Database initialized successfully!")
+        print(f"Database file created: {os.path.abspath('shop.db')}")
+
+        # สำหรับ SQLite ให้เพิ่มคอลัมน์ category ถ้ายังไม่มี
+        try:
+            with db.engine.connect() as conn:
+                conn.execute("ALTER TABLE product ADD COLUMN category TEXT NOT NULL DEFAULT 'อุปกรณ์เสริมฟุตบอล'")
+                print("✅ Added 'category' column to existing product table")
+        except Exception:
+            # ถ้าเกิดข้อผิดพลาด (เช่นคอลัมน์มีอยู่แล้ว) ให้ข้าม
+            pass
         
         # เพิ่มข้อมูลตัวอย่างถ้า Database ว่างเปล่า
         seed_sample_data()

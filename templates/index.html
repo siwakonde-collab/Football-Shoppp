@@ -104,7 +104,7 @@
         /* Hero/Banner Section */
         .hero-section {
             background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), 
-                        url('https://images.unsplash.com/photo-1593438653385-ad0cb6cc2c9e?w=1200&h=500&fit=crop') center/cover;
+                        url('https://img.freepik.com/premium-photo/trendy-athletic-apparel-collection-showcased-sport-store-setup_1077802-363570.jpg?semt=ais_user_personalization&w=740&q=80') center/cover;
             height: 500px;
             display: flex;
             align-items: center;
@@ -461,7 +461,13 @@
     <section class="products-section" id="products">
         <div class="container">
             <h2 class="section-title">สินค้าแนะนำ</h2>
-            
+            <!-- category filter links -->
+            <div class="mb-4 text-center">
+                <a href="/" class="me-3 {% if not selected_category %}fw-bold text-decoration-underline{% endif %}">ทั้งหมด</a>
+                {% for cat in categories %}
+                <a href="/?category={{ cat }}" class="me-3 {% if selected_category==cat %}fw-bold text-decoration-underline{% endif %}">{{ cat }}</a>
+                {% endfor %}
+            </div>
             <div class="row g-4">
                 {% for product in products %}
                 <!-- Product Card - {{ product.id }} -->
@@ -472,7 +478,7 @@
                             <span class="product-badge">New</span>
                         </div>
                         <div class="product-body">
-                            <p class="product-category">Featured Product</p>
+                            <p class="product-category">{{ product.category }}</p>
                             <h5 class="product-name">{{ product.name }}</h5>
                             <p class="product-description">สินค้าฟุตบอลคุณภาพดีจากฐานข้อมูล Football Shop</p>
                             <div class="product-rating">

@@ -326,11 +326,12 @@
             <table class="table table-hover">
                 <thead>
                     <tr>
-                        <th style="width: 10%;">ID</th>
-                        <th style="width: 15%;">รูปภาพ</th>
-                        <th style="width: 35%;">ชื่อสินค้า</th>
+                        <th style="width: 8%;">ID</th>
+                        <th style="width: 12%;">รูปภาพ</th>
+                        <th style="width: 30%;">ชื่อสินค้า</th>
+                        <th style="width: 15%;">หมวดหมู่</th>
                         <th style="width: 15%;">ราคา</th>
-                        <th style="width: 25%;">การจัดการ</th>
+                        <th style="width: 20%;">การจัดการ</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -344,6 +345,9 @@
                         </td>
                         <td>
                             <strong>{{ product.name }}</strong>
+                        </td>
+                        <td>
+                            {{ product.category }}
                         </td>
                         <td>
                             <span class="product-price">฿{{ "%.2f"|format(product.price) }}</span>
